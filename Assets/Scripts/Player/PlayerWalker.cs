@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class PlayerWalker : MonoBehaviour
 {
-    // Max speed player can move at
+    [Tooltip("Max speed player can move at")]
     public float speedMax = 10f;
 
     private float speedHorizCurrent;
     private float speedVertCurrent;
+    private bool facingDirection = false; // false = left, true = right
 
     // Player gravity. Shouldn't use this over unity's gravity scale.
     //public float gravity = 2f;
 
-    // How high the player is to jump
+    [Tooltip("How high the player is to jump")]
     public float jumpHeight = 4f;
-    // How long to buffer the jump input for. Currently nonfunctional.
+    [Tooltip("How long to buffer the jump input for. Currently nonfunctional.")]
     public float jumpBufferLength = .2f; // Currently unused
     private float jumpBufferCurrent; 
 
@@ -24,16 +25,22 @@ public class PlayerWalker : MonoBehaviour
 
     private Rigidbody2D myRB;
 
-    // Spawnpoint of the bubble
+    [Tooltip("Spawnpoint of the bubble")]
     public Transform bubbleSpawn;
-    // The Bubble
+    [Tooltip("The Bubble")]
     public GameObject prefabBubble;
-    public float fireCooldown;
+    [Tooltip("Max num of bubbles that can be active at once. Default (3)")]
+    public int maxBubbles = 3;
+    [Tooltip("How fast can you shoot bubble? Default (.1)")]
+    public float fireRate = .1f;
+    private float fireCooldown = 0f; // Internal countdown
 
     // Input stuff
     private float inputHoriz;
     private bool inputJump;
-    private bool jumpHeld; // Currently unused, will be used to restrict jumping until jump input has been released.
+    private bool inputJumpHeld; // Currently unused, will be used to restrict jumping until jump input has been released.
+    private bool inputFire;
+    private bool inputFireHeld;
     private Vector2 moveDirection;
 
     void Start()
@@ -53,17 +60,24 @@ public class PlayerWalker : MonoBehaviour
                 jumpBufferCurrent = 0f; 
             }
         }
+
         // Get the movement inputs
         GetInput();
 
         if (fireCooldown <= 0)
-                {
-                    fireCooldown = 0;
-                    if (Input.GetAxisRaw("Fire1") > 0.01f)
-                    {
-                        FireBubble(bubbleSpawn.transform);
-                    }
-                }
+        {
+            fireCooldown = 0;
+            if (inputFire == true && inputFireHeld != true)
+            {
+                FireBubble(bubbleSpawn.transform, facingDirection);
+                inputFireHeld = true;
+            }
+        }
+
+        else
+        {
+            fireCooldown -= Time.deltaTime;
+        }
     }
 
     void FixedUpdate()
@@ -80,7 +94,7 @@ public class PlayerWalker : MonoBehaviour
             print("Jumped!");
         }
 
-        //Debug.Log(isGrounded + "\n" + jumpBufferCurrent + "\n" + jumpHeld);
+        //Debug.Log(isGrounded + "\n" + jumpBufferCurrent + "\n" + inputJumpHeld);
         
         // Only apply horizontal movement if speed isn't already at or above max speed
         if (speedHorizCurrent !> speedMax || true)
@@ -97,36 +111,59 @@ public class PlayerWalker : MonoBehaviour
     void GetInput()
     {
         inputHoriz = Input.GetAxisRaw("Horizontal");
+        if (inputHoriz > 0.01f)
+        {
+            facingDirection = true;
+        }
+        else if (inputHoriz < -0.01f) 
+        {
+            facingDirection = false;
+        }
+
         if (Input.GetAxisRaw("Jump") > 0f)
         {
             inputJump = true;
         }
 
-        else
-        {
+        else {
             inputJump = false;
-            jumpHeld = false;
+            inputJumpHeld = false;
         }
         
+        if (Input.GetAxisRaw("Fire1") > 0.01f) 
+        {
+            inputFire = true;
+        }
+
+        else {
+            inputFire = false;
+            inputFireHeld = false;
+        }
     }
     
-    void FireBubble(Transform p_bubbleSpawn)
+    void FireBubble(Transform p_bubbleSpawn, bool p_facingDirection)
     {
-
+        if (GameObject.FindGameObjectsWithTag("BubbleShot").Length < maxBubbles)
+        {
+            Instantiate(prefabBubble, p_bubbleSpawn.position, p_bubbleSpawn.rotation.normalized);
+            fireCooldown = fireRate;
+        }
+        else
+        {
+            return;
+        }
     }
     
     void OnCollisionStay2D(Collision2D other)
     {
         // Check if collision is with ground and set isGrounded appropriately
-        if (other.collider.tag == "Ground")
+        if (other.collider.CompareTag("Ground"))
         {
             isGrounded = true;
-            Debug.Log("Grounded");
         }
         else
         {
             isGrounded = false;
-            Debug.Log("Not Grounded!");
         }
     }
 }
