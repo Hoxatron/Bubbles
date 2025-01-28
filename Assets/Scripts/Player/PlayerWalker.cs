@@ -24,6 +24,11 @@ public class PlayerWalker : MonoBehaviour
 
     private Rigidbody2D myRB;
 
+    // Spawnpoint of the bubble
+    public Transform bubbleSpawn;
+    // The Bubble
+    public GameObject prefabBubble;
+    public float fireCooldown;
 
     // Input stuff
     private float inputHoriz;
@@ -50,6 +55,15 @@ public class PlayerWalker : MonoBehaviour
         }
         // Get the movement inputs
         GetInput();
+
+        if (fireCooldown <= 0)
+                {
+                    fireCooldown = 0;
+                    if (Input.GetAxisRaw("Fire1") > 0.01f)
+                    {
+                        FireBubble(bubbleSpawn.transform);
+                    }
+                }
     }
 
     void FixedUpdate()
@@ -96,6 +110,10 @@ public class PlayerWalker : MonoBehaviour
         
     }
     
+    void FireBubble(Transform p_bubbleSpawn)
+    {
+
+    }
     
     void OnCollisionStay2D(Collision2D other)
     {
