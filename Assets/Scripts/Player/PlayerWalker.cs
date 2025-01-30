@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerWalker : MonoBehaviour
 {
@@ -27,6 +29,7 @@ public class PlayerWalker : MonoBehaviour
 
     [Tooltip("Spawnpoint of the bubble")]
     public Transform bubbleSpawn;
+    public Transform bubbleSpawnInverted; // 
     [Tooltip("The Bubble")]
     public GameObject prefabBubble;
     [Tooltip("Max num of bubbles that can be active at once. Default (3)")]
@@ -69,7 +72,12 @@ public class PlayerWalker : MonoBehaviour
             fireCooldown = 0;
             if (inputFire == true && inputFireHeld != true)
             {
-                FireBubble(bubbleSpawn.transform, facingDirection);
+                if (facingDirection) {
+                    FireBubble(bubbleSpawn.transform);
+                }
+                else {
+                    FireBubble(bubbleSpawnInverted.transform);
+                }
                 inputFireHeld = true;
             }
         }
@@ -87,12 +95,15 @@ public class PlayerWalker : MonoBehaviour
         speedVertCurrent = myRB.velocity.y;
 
         // If they are grounded and jump is pressed, jump.
-        if ((isGrounded == true) && (inputJump == true))
+        if ((isGrounded == true) && (inputJump == true) && (inputJumpHeld == false))
         {
             speedVertCurrent += jumpHeight;
             isGrounded = false;
             print("Jumped!");
+            inputJumpHeld = true;
         }
+
+        //Debug.Log(isGrounded + "" + inputJumpHeld);
 
         //Debug.Log(isGrounded + "\n" + jumpBufferCurrent + "\n" + inputJumpHeld);
         
@@ -120,7 +131,7 @@ public class PlayerWalker : MonoBehaviour
             facingDirection = false;
         }
 
-        if (Input.GetAxisRaw("Jump") > 0f)
+        if (Input.GetAxisRaw("Jump") >= 0.01f)
         {
             inputJump = true;
         }
@@ -141,16 +152,13 @@ public class PlayerWalker : MonoBehaviour
         }
     }
     
-    void FireBubble(Transform p_bubbleSpawn, bool p_facingDirection)
+
+    void FireBubble(Transform p_bubbleSpawn)
     {
         if (GameObject.FindGameObjectsWithTag("BubbleShot").Length < maxBubbles)
         {
-            Instantiate(prefabBubble, p_bubbleSpawn.position, p_bubbleSpawn.rotation.normalized);
             fireCooldown = fireRate;
-        }
-        else
-        {
-            return;
+            Instantiate(prefabBubble, p_bubbleSpawn.position, p_bubbleSpawn.rotation);
         }
     }
     
@@ -161,9 +169,18 @@ public class PlayerWalker : MonoBehaviour
         {
             isGrounded = true;
         }
-        else
+        //else
+        //{
+        //    isGrounded = false;
+        //}
+    }
+
+    void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.collider.CompareTag("Ground"))
         {
             isGrounded = false;
         }
     }
+
 }
