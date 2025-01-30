@@ -61,7 +61,6 @@ public class P_BubbleWalker : MonoBehaviour
     }
 
 
-
     //Update is called once per frame
     void Update()
     {
