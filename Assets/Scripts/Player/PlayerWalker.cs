@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class PlayerWalker : MonoBehaviour
 {
@@ -19,31 +18,40 @@ public class PlayerWalker : MonoBehaviour
     [Tooltip("How high the player is to jump")]
     public float jumpHeight = 4f;
     [Tooltip("How long to buffer the jump input for. Currently nonfunctional.")]
-    public float jumpBufferLength = .2f; // Currently unused
+    // private float jumpBufferLength = .2f; // Currently unused
     private float jumpBufferCurrent; 
 
     // Is player touching the ground?
     private bool isGrounded;
 
-    private Rigidbody2D myRB;
+    [HideInInspector] public bool isEmptyBouncing; // Is bouncing gonna happen
+    [HideInInspector] public bool isFullBouncing; // Is bigger bouncing gonna happen
+    [Tooltip("How high does player bounce off of empty bubbles")]
+    public float emptyBounceHeight;
+    [Tooltip("How high does player bounce off of full bubbles")]
+    public float fullBounceHeight;
 
-    [Tooltip("Spawnpoint of the bubble")]
+    private Rigidbody2D myRB;
+    //private Collider2D lowerBounce;
+
+    [Tooltip("Spawnpoint of the bubble when facing right")]
     public Transform bubbleSpawn;
+    [Tooltip("The other spawnpoint of the bubble, when facing left")]
     public Transform bubbleSpawnInverted; // 
     [Tooltip("The Bubble")]
     public GameObject prefabBubble;
-    [Tooltip("Max num of bubbles that can be active at once. Default (3)")]
+    [Tooltip("Max num of bubbles that can be active at once.")]
     public int maxBubbles = 3;
-    [Tooltip("How fast can you shoot bubble? Default (.1)")]
+    [Tooltip("How fast can you shoot bubble?")]
     public float fireRate = .1f;
-    private float fireCooldown = 0f; // Internal countdown
+    private float fireCooldown = 0f; // Internal countdown for bubble fire rate.
 
     // Input stuff
     private float inputHoriz;
     private bool inputJump;
-    private bool inputJumpHeld; // Currently unused, will be used to restrict jumping until jump input has been released.
+    private bool inputJumpHeld; // Used to restrict jumping until button is released.
     private bool inputFire;
-    private bool inputFireHeld;
+    private bool inputFireHeld; // Used to restrict firing until button is released.
     private Vector2 moveDirection;
 
     void Start()
@@ -59,7 +67,7 @@ public class PlayerWalker : MonoBehaviour
         {
             jumpBufferCurrent -= 1f * Time.deltaTime;
             if (jumpBufferCurrent < 0f) 
-            { 
+            {
                 jumpBufferCurrent = 0f; 
             }
         }
@@ -99,23 +107,30 @@ public class PlayerWalker : MonoBehaviour
         {
             speedVertCurrent += jumpHeight;
             isGrounded = false;
-            print("Jumped!");
+            
             inputJumpHeld = true;
         }
 
-        //Debug.Log(isGrounded + "" + inputJumpHeld);
-
-        //Debug.Log(isGrounded + "\n" + jumpBufferCurrent + "\n" + inputJumpHeld);
-        
         // Only apply horizontal movement if speed isn't already at or above max speed
         if (speedHorizCurrent !> speedMax || true)
         {
             speedHorizCurrent = inputHoriz * speedMax;
         }
 
+        // If bouncing on bubble, 
+        if (isEmptyBouncing == true) {
+            speedVertCurrent = emptyBounceHeight;
+        }
+        else if (isFullBouncing == true) { 
+            speedVertCurrent = fullBounceHeight;
+        }
+
         // Update rigidbody velocity with new values
         moveDirection = new Vector2(speedHorizCurrent, speedVertCurrent);
         myRB.velocity = moveDirection;
+
+        isEmptyBouncing = false;
+        isFullBouncing = false;
     }
 
     // Get the inputs needed. Don't do any physics calculations here!
@@ -169,10 +184,18 @@ public class PlayerWalker : MonoBehaviour
         {
             isGrounded = true;
         }
-        //else
-        //{
-        //    isGrounded = false;
-        //}
+        if (other.collider.CompareTag("BubbleBouncer"))
+        {
+            if (!other.gameObject.GetComponentInParent<PlayerBubbleWalker>().hasCrab)
+            {
+                BubbleBounce(false);
+            }
+            else
+            {
+                BubbleBounce(true);
+            }
+            print(other.gameObject.GetComponentInParent<PlayerBubbleWalker>().hasCrab);
+        }
     }
 
     void OnCollisionExit2D(Collision2D other)
@@ -181,6 +204,29 @@ public class PlayerWalker : MonoBehaviour
         {
             isGrounded = false;
         }
+        if (other.collider.CompareTag("BubbleBouncer"))
+        {
+            isEmptyBouncing = false;
+        }
     }
 
+    public void BubbleBounce(bool isFullBounce)
+    {
+        if (isFullBounce == false)
+        {
+            if (speedVertCurrent < emptyBounceHeight) {
+                isEmptyBouncing = true;
+            }
+            print("Empty bounced");
+        }
+        else
+        {
+            if (speedVertCurrent < fullBounceHeight) {
+                isFullBouncing = true;
+            }
+            print("FullBounced");
+        }
+
+        return;
+    }
 }
