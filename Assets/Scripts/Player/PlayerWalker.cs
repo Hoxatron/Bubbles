@@ -28,7 +28,7 @@ public class PlayerWalker : MonoBehaviour
     private float jumpBufferCurrent;
 
     // Is player touching the ground?
-    private bool isGrounded;
+    [HideInInspector] public bool isGrounded;
 
     [HideInInspector] public bool isEmptyBouncing; // Is bouncing gonna happen
     [HideInInspector] public bool isFullBouncing; // Is bigger bouncing gonna happen
@@ -196,10 +196,10 @@ public class PlayerWalker : MonoBehaviour
     void OnCollisionStay2D(Collision2D other)
     {
         // Check if collision is with ground and set isGrounded appropriately
-        if (other.collider.CompareTag("Ground"))
-        {
-            isGrounded = true;
-        }
+        //if (other.collider.CompareTag("Ground"))
+        //{
+        //    isGrounded = true;
+        //}
         if (other.collider.CompareTag("BubbleBouncer"))
         {
             if (!other.gameObject.GetComponentInParent<PlayerBubbleWalker>().hasCrab)
@@ -216,10 +216,10 @@ public class PlayerWalker : MonoBehaviour
 
     void OnCollisionExit2D(Collision2D other)
     {
-        if (other.collider.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
+        //if (other.collider.CompareTag("Ground"))
+        //{
+        //    isGrounded = false;
+        //}
         if (other.collider.CompareTag("BubbleBouncer"))
         {
             isEmptyBouncing = false;
