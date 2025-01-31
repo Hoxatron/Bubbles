@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - LowerBouncer
   - BubbleBouncer
+  - WinBound
   layers:
   - Default
   - TransparentFX

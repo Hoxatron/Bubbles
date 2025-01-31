@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+
 public class CrabWalker : MonoBehaviour
 {
     [Tooltip("How fast the crab walks")]
@@ -22,7 +23,9 @@ public class CrabWalker : MonoBehaviour
     private LayerMask mask; // Raycast layer mask
 
     private Rigidbody2D rb;
+
     
+
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +34,8 @@ public class CrabWalker : MonoBehaviour
         mask = LayerMask.GetMask("Default");
 
         speed *= 60; // Crab moves w/ delta time, adjust speed to match 60hz physics.
+
+        
     }
 
     // Update is called once per frame
@@ -38,6 +43,7 @@ public class CrabWalker : MonoBehaviour
     {
         movement.Set (speed * Time.deltaTime, rb.velocity.y); // set movement vector, leave previous y value to let gravity do it's thing.
         rb.velocity = movement; // set velocity of crab to the movement vector
+        
     }
 
     private void FixedUpdate()
