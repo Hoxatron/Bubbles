@@ -37,12 +37,6 @@ public class PlayerBubbleWalker : MonoBehaviour
     public GameObject thinker;
     public VictoryCheck vicCheck;
 
-    void Awake()
-    {
-        vicCheck = thinker.getComponent<VictoryCheck>();
-        Destroy(gameObject);
-    }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -56,6 +50,8 @@ public class PlayerBubbleWalker : MonoBehaviour
         else {
             horizVel = 1;
         }
+        
+        vicCheck = thinker.GetComponent<VictoryCheck>();
 
         bubbleTrans.rotation.Set(0, 0, 0, 0); //Reset rotation.
 
