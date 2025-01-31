@@ -24,6 +24,8 @@ public class CrabWalker : MonoBehaviour
 
     private Rigidbody2D rb;
 
+    public Animator crabAnim;
+
     
 
 
@@ -35,7 +37,7 @@ public class CrabWalker : MonoBehaviour
 
         speed *= 60; // Crab moves w/ delta time, adjust speed to match 60hz physics.
 
-        
+        //crabAnim = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -52,8 +54,10 @@ public class CrabWalker : MonoBehaviour
         if (Physics2D.Raycast(raycastPointLeft.position, raycastPointLeft.TransformDirection(Vector2.down), 1.3f, mask) != true)
         {
             speed *= -1; // Flip movement
+
             print("Crab Rotated!");
             raycastPointLeft.RotateAround(rb.position, Vector3.up, 180); // Spin raycast point 180 degrees. That's right, we're only checking from one.
+            crabAnim.SetBool("WalkTrigger", !crabAnim.GetBool("WalkTrigger")); //Inverts the Walk trigger for the crab's walk cycle
         }
     }
 

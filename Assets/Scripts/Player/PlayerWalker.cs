@@ -60,6 +60,9 @@ public class PlayerWalker : MonoBehaviour
     private bool inputFireHeld; // Used to restrict firing until button is released.
     private Vector2 moveDirection;
 
+    public Animator bobbyAnim;
+    public GameObject Bobby;
+
     void Start()
     {
         myRB = GetComponent<Rigidbody2D>();
@@ -116,6 +119,7 @@ public class PlayerWalker : MonoBehaviour
             speedVertCurrent += jumpHeight;
             jumpAudio.Play();
             isGrounded = false;
+            bobbyAnim.SetTrigger("JumpTrigger");
 
             inputJumpHeld = true;
         }
@@ -138,8 +142,10 @@ public class PlayerWalker : MonoBehaviour
             jumpBubbleAudio.Play();
         }
 
-        // Update rigidbody velocity with new values
-        moveDirection = new Vector2(speedHorizCurrent, speedVertCurrent);
+        
+
+            // Update rigidbody velocity with new values
+            moveDirection = new Vector2(speedHorizCurrent, speedVertCurrent);
         myRB.velocity = moveDirection;
 
         isEmptyBouncing = false;
@@ -153,10 +159,20 @@ public class PlayerWalker : MonoBehaviour
         if (inputHoriz > 0.01f)
         {
             facingDirection = true;
+            Bobby.transform.rotation = new Quaternion(0, 180, 0, 0);
+            if (isGrounded == true)
+            {
+                bobbyAnim.SetTrigger("WalkRight");
+            }
         }
         else if (inputHoriz < -0.01f)
         {
             facingDirection = false;
+            Bobby.transform.rotation = new Quaternion(0, 0, 0, 0);
+            if (isGrounded == true)
+            {
+                bobbyAnim.SetTrigger("WalkLeft");
+            }
         }
 
         if (Input.GetAxisRaw("Jump") >= 0.01f)
@@ -180,6 +196,15 @@ public class PlayerWalker : MonoBehaviour
             inputFire = false;
             inputFireHeld = false;
         }
+
+        if (inputHoriz == 0f)
+        {
+            if (isGrounded == true)
+            {
+                bobbyAnim.SetTrigger("Idle");
+            }
+        }
+
     }
 
 

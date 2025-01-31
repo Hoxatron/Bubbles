@@ -232,8 +232,6 @@ MonoBehaviour:
   deceleration: 0.975
   crabDecel: 0.33
   timeUntilJumpable: 0.2
-  thinker: {fileID: 0}
-  vicCheck: {fileID: 0}
 --- !u!58 &5472596052680292853
 CircleCollider2D:
   m_ObjectHideFlags: 0
