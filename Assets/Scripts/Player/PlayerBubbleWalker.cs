@@ -34,14 +34,14 @@ public class PlayerBubbleWalker : MonoBehaviour
     [Tooltip("How long until bubble can be jumped on?")]
     public float timeUntilJumpable;
 
-    public GameObject thinker;
-    public VictoryCheck vicCheck;
+    //public GameObject thinker;
+    //public VictoryCheck vicCheck;
 
-    void Awake()
-    {
-        vicCheck = thinker.getComponent<VictoryCheck>();
-        Destroy(gameObject);
-    }
+    //void Awake()
+    //{
+    //    vicCheck = thinker.GetComponent<VictoryCheck>();
+    //    Destroy(gameObject);
+    //}
 
     // Start is called before the first frame update
     void Start()
@@ -60,13 +60,13 @@ public class PlayerBubbleWalker : MonoBehaviour
         bubbleTrans.rotation.Set(0, 0, 0, 0); //Reset rotation.
 
 
-        StartCoroutine(popper());
+        StartCoroutine(Popper());
         
         Destroy(gameObject, 6); // Destroy after 5 seconds
         
     }
     
-    IEnumerator popper()
+    IEnumerator Popper()
     {
         yield return new WaitForSeconds(5);
         GetComponent<Renderer>().enabled = false;
@@ -74,7 +74,7 @@ public class PlayerBubbleWalker : MonoBehaviour
         if (hasCrab == true)
         {
             popCrabAudio.Play();
-            vicCheck.killCount += 1;
+            //vicCheck.killCount += 1;
         }
         else
         {
