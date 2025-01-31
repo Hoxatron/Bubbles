@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerWalker : MonoBehaviour
 {
@@ -15,11 +16,16 @@ public class PlayerWalker : MonoBehaviour
     // Player gravity. Shouldn't use this over unity's gravity scale.
     //public float gravity = 2f;
 
+    //Audio clips stored in variables
+    public AudioSource jumpAudio;
+    public AudioSource jumpBubbleAudio;
+    public AudioSource shootAudio;
+
     [Tooltip("How high the player is to jump")]
     public float jumpHeight = 4f;
     [Tooltip("How long to buffer the jump input for. Currently nonfunctional.")]
     // private float jumpBufferLength = .2f; // Currently unused
-    private float jumpBufferCurrent; 
+    private float jumpBufferCurrent;
 
     // Is player touching the ground?
     private bool isGrounded;
@@ -60,15 +66,15 @@ public class PlayerWalker : MonoBehaviour
         jumpBufferCurrent = 0f;
     }
 
-    
+
     void Update()
     {
         if (jumpBufferCurrent > 0f)
         {
             jumpBufferCurrent -= 1f * Time.deltaTime;
-            if (jumpBufferCurrent < 0f) 
+            if (jumpBufferCurrent < 0f)
             {
-                jumpBufferCurrent = 0f; 
+                jumpBufferCurrent = 0f;
             }
         }
 
@@ -80,10 +86,12 @@ public class PlayerWalker : MonoBehaviour
             fireCooldown = 0;
             if (inputFire == true && inputFireHeld != true)
             {
-                if (facingDirection) {
+                if (facingDirection)
+                {
                     FireBubble(bubbleSpawn.transform);
                 }
-                else {
+                else
+                {
                     FireBubble(bubbleSpawnInverted.transform);
                 }
                 inputFireHeld = true;
@@ -106,23 +114,28 @@ public class PlayerWalker : MonoBehaviour
         if ((isGrounded == true) && (inputJump == true) && (inputJumpHeld == false))
         {
             speedVertCurrent += jumpHeight;
+            jumpAudio.Play();
             isGrounded = false;
-            
+
             inputJumpHeld = true;
         }
 
         // Only apply horizontal movement if speed isn't already at or above max speed
-        if (speedHorizCurrent !> speedMax || true)
+        if (speedHorizCurrent! > speedMax || true)
         {
             speedHorizCurrent = inputHoriz * speedMax;
         }
 
         // If bouncing on bubble, 
-        if (isEmptyBouncing == true) {
+        if (isEmptyBouncing == true)
+        {
             speedVertCurrent = emptyBounceHeight;
+            jumpBubbleAudio.Play();
         }
-        else if (isFullBouncing == true) { 
+        else if (isFullBouncing == true)
+        {
             speedVertCurrent = fullBounceHeight;
+            jumpBubbleAudio.Play();
         }
 
         // Update rigidbody velocity with new values
@@ -141,7 +154,7 @@ public class PlayerWalker : MonoBehaviour
         {
             facingDirection = true;
         }
-        else if (inputHoriz < -0.01f) 
+        else if (inputHoriz < -0.01f)
         {
             facingDirection = false;
         }
@@ -151,22 +164,24 @@ public class PlayerWalker : MonoBehaviour
             inputJump = true;
         }
 
-        else {
+        else
+        {
             inputJump = false;
             inputJumpHeld = false;
         }
-        
-        if (Input.GetAxisRaw("Fire1") > 0.01f) 
+
+        if (Input.GetAxisRaw("Fire1") > 0.01f)
         {
             inputFire = true;
         }
 
-        else {
+        else
+        {
             inputFire = false;
             inputFireHeld = false;
         }
     }
-    
+
 
     void FireBubble(Transform p_bubbleSpawn)
     {
@@ -174,9 +189,10 @@ public class PlayerWalker : MonoBehaviour
         {
             fireCooldown = fireRate;
             Instantiate(prefabBubble, p_bubbleSpawn.position, p_bubbleSpawn.rotation);
+            shootAudio.Play();
         }
     }
-    
+
     void OnCollisionStay2D(Collision2D other)
     {
         // Check if collision is with ground and set isGrounded appropriately
@@ -214,14 +230,16 @@ public class PlayerWalker : MonoBehaviour
     {
         if (isFullBounce == false)
         {
-            if (speedVertCurrent < emptyBounceHeight) {
+            if (speedVertCurrent < emptyBounceHeight)
+            {
                 isEmptyBouncing = true;
             }
             print("Empty bounced");
         }
         else
         {
-            if (speedVertCurrent < fullBounceHeight) {
+            if (speedVertCurrent < fullBounceHeight)
+            {
                 isFullBouncing = true;
             }
             print("FullBounced");
@@ -229,4 +247,18 @@ public class PlayerWalker : MonoBehaviour
 
         return;
     }
+
+    public void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Enemy")) // If Bobby touches an Enemy, transitions to Game Over screen
+        {
+            SceneManager.LoadScene("Lose");
+        }
+
+        if (other.gameObject.CompareTag("WinBound")) // If Bobby touches the goal, transitions to Win screen
+        {
+            SceneManager.LoadScene("Win");
+        }
+    }
+
 }

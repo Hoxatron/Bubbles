@@ -20,6 +20,11 @@ public class PlayerBubbleWalker : MonoBehaviour
     [HideInInspector] public bool hasCrab;
     //private PlayerBubbleBounce bounceScript;
 
+    //Audio clips stored in variables
+    public AudioSource hitAudio;
+    public AudioSource popAudio;
+    public AudioSource popCrabAudio;
+
     [Tooltip("The speed of the bubble")]
     public float bubbleSpeed;
     [Tooltip("How fast the bubble decelerates. Should probably be kept above .96 at a minimum!")]
@@ -28,6 +33,15 @@ public class PlayerBubbleWalker : MonoBehaviour
     public float crabDecel;
     [Tooltip("How long until bubble can be jumped on?")]
     public float timeUntilJumpable;
+
+    public GameObject thinker;
+    public VictoryCheck vicCheck;
+
+    void Awake()
+    {
+        vicCheck = thinker.getComponent<VictoryCheck>();
+        Destroy(gameObject);
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -45,9 +59,30 @@ public class PlayerBubbleWalker : MonoBehaviour
 
         bubbleTrans.rotation.Set(0, 0, 0, 0); //Reset rotation.
 
-        Destroy(gameObject, 5); // Destroy after 5 seconds
+
+        StartCoroutine(popper());
+        
+        Destroy(gameObject, 6); // Destroy after 5 seconds
+        
     }
     
+    IEnumerator popper()
+    {
+        yield return new WaitForSeconds(5);
+        GetComponent<Renderer>().enabled = false;
+        crabModel.SetActive(false);
+        if (hasCrab == true)
+        {
+            popCrabAudio.Play();
+            vicCheck.killCount += 1;
+        }
+        else
+        {
+            popAudio.Play();
+        }
+        //Destroy(gameObject);
+    }
+
     void FixedUpdate()
     {
         if (rb != null)
@@ -88,6 +123,7 @@ public class PlayerBubbleWalker : MonoBehaviour
             hasCrab = true; // We now have a crab
             crabModel.SetActive(true); // Turn on the model
             bubbleSpeed *= crabDecel; // Cut the speed
+            hitAudio.Play();
 
             // Make the bubble a bit bigger.
             gameObject.transform.localScale.Set(gameObject.transform.localScale.x * 1.15f, gameObject.transform.localScale.y * 1.15f, gameObject.transform.localScale.z * 1.15f);
