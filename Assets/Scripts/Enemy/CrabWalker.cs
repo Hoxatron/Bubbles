@@ -20,7 +20,8 @@ public class CrabWalker : MonoBehaviour
     //public float walkDistance;
     [Tooltip("Left-side raycast point for ensuring crab does not walk off of ledge. Is the ONLY raycast point despite the name!")]
     public Transform raycastPointLeft;
-    private LayerMask mask; // Raycast layer mask
+    private LayerMask emptyMask; // Raycast layer mask
+    private LayerMask groundMask;
 
     private Rigidbody2D rb;
 
@@ -31,7 +32,8 @@ public class CrabWalker : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        mask = LayerMask.GetMask("Default");
+        emptyMask = LayerMask.GetMask("Default", "SceneViewOnly");
+
 
         speed *= 60; // Crab moves w/ delta time, adjust speed to match 60hz physics.
 
@@ -49,11 +51,17 @@ public class CrabWalker : MonoBehaviour
     private void FixedUpdate()
     {
         // Raycast to detect empty ground — adjust this number to alter it's length ------------------------\/
-        if (Physics2D.Raycast(raycastPointLeft.position, raycastPointLeft.TransformDirection(Vector2.down), 1.3f, mask) != true)
+        if (Physics2D.Raycast(raycastPointLeft.position, raycastPointLeft.TransformDirection(Vector2.down), 1.3f, emptyMask) != true)
         {
             speed *= -1; // Flip movement
             print("Crab Rotated!");
             raycastPointLeft.RotateAround(rb.position, Vector3.up, 180); // Spin raycast point 180 degrees. That's right, we're only checking from one.
+        }
+        else if (Physics2D.Raycast(raycastPointLeft.position, raycastPointLeft.TransformDirection(Vector2.zero), .01f) == true)
+        {
+            speed *= -1;
+            print("Crab Wall Rotated!");
+            raycastPointLeft.RotateAround(rb.position, Vector3.up, 180);
         }
     }
 

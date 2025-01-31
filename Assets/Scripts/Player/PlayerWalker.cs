@@ -12,6 +12,7 @@ public class PlayerWalker : MonoBehaviour
     private float speedHorizCurrent;
     private float speedVertCurrent;
     private bool facingDirection = false; // false = left, true = right
+    public Transform mesh;
 
     // Player gravity. Shouldn't use this over unity's gravity scale.
     //public float gravity = 2f;
@@ -80,6 +81,8 @@ public class PlayerWalker : MonoBehaviour
 
         // Get the movement inputs
         GetInput();
+
+
 
         if (fireCooldown <= 0)
         {
@@ -193,6 +196,28 @@ public class PlayerWalker : MonoBehaviour
         }
     }
 
+    public void BubbleBounce(bool isFullBounce)
+    {
+        if (isFullBounce == false)
+        {
+            if (speedVertCurrent < emptyBounceHeight)
+            {
+                isEmptyBouncing = true;
+            }
+            print("Empty bounced");
+        }
+        else
+        {
+            if (speedVertCurrent < fullBounceHeight)
+            {
+                isFullBouncing = true;
+            }
+            print("FullBounced");
+        }
+
+        return;
+    }
+
     void OnCollisionStay2D(Collision2D other)
     {
         // Check if collision is with ground and set isGrounded appropriately
@@ -224,28 +249,6 @@ public class PlayerWalker : MonoBehaviour
         {
             isEmptyBouncing = false;
         }
-    }
-
-    public void BubbleBounce(bool isFullBounce)
-    {
-        if (isFullBounce == false)
-        {
-            if (speedVertCurrent < emptyBounceHeight)
-            {
-                isEmptyBouncing = true;
-            }
-            print("Empty bounced");
-        }
-        else
-        {
-            if (speedVertCurrent < fullBounceHeight)
-            {
-                isFullBouncing = true;
-            }
-            print("FullBounced");
-        }
-
-        return;
     }
 
     public void OnCollisionEnter2D(Collision2D other)

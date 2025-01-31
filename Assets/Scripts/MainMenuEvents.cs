@@ -10,7 +10,7 @@ public class MainMenuEvents : MonoBehaviour
     private Button _startButton;
     private Button _exitButton;
     private Button _howToPlayButton;
-    private List<Button> _menuButtons = new List<Button>();
+    private List<Button> _menuButtons = new();
     private AudioSource _audioSource;
 
     private void Awake()
@@ -22,20 +22,11 @@ public class MainMenuEvents : MonoBehaviour
         _exitButton = _document.rootVisualElement.Q<Button>("Exit");
         _howToPlayButton = _document.rootVisualElement.Q<Button>("HowToPlay");
 
-        if (_startButton != null)
-        {
-            _startButton.RegisterCallback<ClickEvent>(OnPlayGameClick);
-        }
+        _startButton?.RegisterCallback<ClickEvent>(OnPlayGameClick);
 
-        if (_exitButton != null)
-        {
-            _exitButton.RegisterCallback<ClickEvent>(OnExitGameClick);
-        }
+        _exitButton?.RegisterCallback<ClickEvent>(OnExitGameClick);
 
-        if (_howToPlayButton != null)
-        {
-            _howToPlayButton.RegisterCallback<ClickEvent>(OnHowToPlayClick);
-        }
+        _howToPlayButton?.RegisterCallback<ClickEvent>(OnHowToPlayClick);
 
         _menuButtons = _document.rootVisualElement.Query<Button>().ToList();
         foreach (var button in _menuButtons)
@@ -46,20 +37,11 @@ public class MainMenuEvents : MonoBehaviour
 
     private void OnDisable()
     {
-        if (_startButton != null)
-        {
-            _startButton.UnregisterCallback<ClickEvent>(OnPlayGameClick);
-        }
+        _startButton?.UnregisterCallback<ClickEvent>(OnPlayGameClick);
 
-        if (_exitButton != null)
-        {
-            _exitButton.UnregisterCallback<ClickEvent>(OnExitGameClick);
-        }
+        _exitButton?.UnregisterCallback<ClickEvent>(OnExitGameClick);
 
-        if (_howToPlayButton != null)
-        {
-            _howToPlayButton.UnregisterCallback<ClickEvent>(OnHowToPlayClick);
-        }
+        _howToPlayButton?.UnregisterCallback<ClickEvent>(OnHowToPlayClick);
 
         foreach (var button in _menuButtons)
         {

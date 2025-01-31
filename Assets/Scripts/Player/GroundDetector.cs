@@ -16,10 +16,10 @@ public class GroundDetector : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    //void Update()
+    //{
         
-    }
+    //}
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -34,6 +34,14 @@ public class GroundDetector : MonoBehaviour
         if (other.gameObject.CompareTag("Ground"))
         {
             walker.isGrounded = false;
+        }
+    }
+
+    public void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Ground"))
+        {
+            walker.isGrounded = true;
         }
     }
 }

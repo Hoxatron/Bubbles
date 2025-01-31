@@ -6,7 +6,7 @@ using TMPro;
 
 
 
-public class VictoryCheck : MonoBehaviour
+public class CrabsCheck : MonoBehaviour
 {
 
     public TextMeshProUGUI crabCount; //Crab counter UI
