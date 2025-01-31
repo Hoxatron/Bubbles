@@ -60,10 +60,15 @@ public class PlayerWalker : MonoBehaviour
     private bool inputFireHeld; // Used to restrict firing until button is released.
     private Vector2 moveDirection;
 
+    public GameObject thinker;
+    public VictoryCheck vicCheck;
+
     void Start()
     {
         myRB = GetComponent<Rigidbody2D>();
         jumpBufferCurrent = 0f;
+
+        vicCheck = thinker.GetComponent<VictoryCheck>();
     }
 
 
@@ -257,7 +262,11 @@ public class PlayerWalker : MonoBehaviour
 
         if (other.gameObject.CompareTag("WinBound")) // If Bobby touches the goal, transitions to Win screen
         {
-            SceneManager.LoadScene("Win");
+            if (vicCheck.winCon == true)
+            {
+                SceneManager.LoadScene("Win");
+            }
+            
         }
     }
 

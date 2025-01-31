@@ -34,8 +34,8 @@ public class PlayerBubbleWalker : MonoBehaviour
     [Tooltip("How long until bubble can be jumped on?")]
     public float timeUntilJumpable;
 
-    public GameObject thinker;
-    public VictoryCheck vicCheck;
+    //public GameObject thinker;
+    //public VictoryCheck vicCheck;
 
     // Start is called before the first frame update
     void Start()
@@ -51,7 +51,7 @@ public class PlayerBubbleWalker : MonoBehaviour
             horizVel = 1;
         }
         
-        vicCheck = thinker.GetComponent<VictoryCheck>();
+        //vicCheck = thinker.GetComponent<VictoryCheck>();
 
         bubbleTrans.rotation.Set(0, 0, 0, 0); //Reset rotation.
 
@@ -70,7 +70,7 @@ public class PlayerBubbleWalker : MonoBehaviour
         if (hasCrab == true)
         {
             popCrabAudio.Play();
-            vicCheck.killCount += 1;
+
         }
         else
         {
@@ -119,6 +119,7 @@ public class PlayerBubbleWalker : MonoBehaviour
             hasCrab = true; // We now have a crab
             crabModel.SetActive(true); // Turn on the model
             bubbleSpeed *= crabDecel; // Cut the speed
+            //vicCheck.killCount += 1;
             hitAudio.Play();
 
             // Make the bubble a bit bigger.
