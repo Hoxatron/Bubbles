@@ -12,6 +12,7 @@ public class GroundDetector : MonoBehaviour
     {
         detector = GetComponent<Collider2D>();
         walker = gameObject.GetComponentInParent<PlayerWalker>();
+        walker.isGrounded = true;
     }
 
     // Update is called once per frame

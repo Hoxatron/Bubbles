@@ -15,12 +15,15 @@ EditorBuildSettings:
     path: Assets/Scenes/Lose.unity
     guid: d09c9758dc9913e42965cb7fe7ea8015
   - enabled: 1
-    path: Assets/Scenes/EmptyScene.unity
-    guid: b5617b4beb586464e90094fc5371a5c7
-  - enabled: 1
     path: Assets/Scenes/Win.unity
     guid: 2ff45e5528c21204c9d0239963f06db7
   - enabled: 1
     path: Assets/Scenes/Level.unity
+    guid: 5eef7f6ba32b11046b6795427a145979
+  - enabled: 0
+    path: Assets/Scenes/TestLevel.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 0
+    path: Assets/Scenes/EmptyScene.unity
+    guid: b5617b4beb586464e90094fc5371a5c7
   m_configObjects: {}
